@@ -30,3 +30,6 @@ jobs:
           cache: maven
       - name: Build with Maven Wrapper
         run: ./mvnw -B verify
+      
+      - name: Test with Maven Wrapper
+        run: ./mvnw -B test
