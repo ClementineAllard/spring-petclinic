@@ -49,3 +49,13 @@ jobs:
         with:
           name: code-quality-report
           path: codequality-results/
+
+      - name: Install Docker Compose
+        run: sudo apt-get install docker-compose
+
+      - name: Build and Deploy Docker Image
+        run: |
+          ./mvnw install -PbuildDocker -DskipTests=true -DpushImage \
+            -Dhttps.protocols=TLSv1.2 --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true
+          docker compose build
+          docker compose push
