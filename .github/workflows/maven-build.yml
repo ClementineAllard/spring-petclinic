@@ -33,3 +33,19 @@ jobs:
       
       - name: Test with Maven Wrapper
         run: ./mvnw -B test
+
+      - name: Run Docker Command for Code Quality
+        run: |
+          mkdir codequality-results
+          docker run \
+            --env CODECLIMATE_CODE="$PWD" \
+            --volume "$PWD":/code \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
+            --volume /tmp/cc:/tmp/cc \
+            codeclimate/codeclimate analyze -f html > ./codequality-results/index.html
+
+      - name: Upload Code Quality Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-quality-report
+          path: codequality-results/
