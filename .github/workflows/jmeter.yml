@@ -15,7 +15,7 @@ jobs:
     steps:
       # Étape 1 : Vérifier le code source
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Étape 2 : Se connecter à Docker Hub
       - name: Log in to Docker Hub
@@ -26,7 +26,7 @@ jobs:
 
       # Étape 3 : Construire l'image Docker
       - name: Build Docker image
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
+        run: docker tag jmeter:latest ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
 
       # Étape 4 : Pousser l'image Docker vers Docker Hub
       - name: Push Docker image
