@@ -36,3 +36,7 @@ jobs:
 
       - name: Pull Docker image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
+
+      - name: Executing test
+        run: docker run --rm ${{ secrets.DOCKER_USERNAME }}/jmeter:latest jmeter -n -t ./src/test/petclinic_test_plan.jmx
+
