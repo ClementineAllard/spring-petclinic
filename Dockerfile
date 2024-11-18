@@ -8,14 +8,15 @@ ENV JMETER_VERSION 5.5
 ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
 ENV PATH $JMETER_HOME/bin:$PATH
 
-# Téléchargez et installez JMeter
-RUN apt-get update && \
+# Installation de JMeter
+RUN apt-get update -y && \
     apt-get install -y wget unzip && \
-    wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz && \
-    tar -xzf apache-jmeter-${JMETER_VERSION}.tgz -C /opt && \
-    rm apache-jmeter-${JMETER_VERSION}.tgz && \
+    wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz -O /tmp/apache-jmeter.tgz && \
+    tar -xzf /tmp/apache-jmeter.tgz -C /opt && \
+    rm /tmp/apache-jmeter.tgz && \
     apt-get remove -y wget unzip && \
-    apt-get autoremove -y
+    apt-get autoremove -y && \
+    apt-get clean
 
 # Définir le répertoire de travail par défaut
 WORKDIR $JMETER_HOME
