@@ -38,5 +38,5 @@ jobs:
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
 
       - name: Executing test
-        run: docker run --rm -i ${{ secrets.DOCKER_USERNAME }}/jmeter:latest jmeter -n -t ./src/test/petclinic_test_plan.jmx
+        run: docker run --rm -v ./src/test:/jmeter ${{ secrets.DOCKER_USERNAME }}/jmeter:latest -n -t /jmeter/petclinic_test_plan.jmx -l /jmeter/results.jtl
 
