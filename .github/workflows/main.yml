@@ -9,13 +9,11 @@ name: Docker Build ⚓
 on:
   push:
     branches:
-      - master
-    paths-ignore:
-      - '**.md'
-
+      - main
   pull_request:
-    paths-ignore:
-      - '**.md'
+    branches:
+      - main
+
 
 jobs:
   # Single job now to build Docker Image, run GHC unit tests, and push to DockerHub
@@ -33,7 +31,7 @@ jobs:
       - name: Prepare 📦
         id: prep
         run: |
-          DOCKER_IMAGE=justb4/jmeter
+          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/jmeter
           VERSION="5.5"
           TAGS="${DOCKER_IMAGE}:${VERSION}"
           echo ::set-output name=image::${DOCKER_IMAGE}
