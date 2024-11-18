@@ -26,7 +26,8 @@ jobs:
 
       # Étape 3 : Construire l'image Docker
       - name: Build Docker image
-        run: docker build -t  jmeter:latest .
+        run: |
+          docker build -t  jmeter:latest .
           docker tag  jmeter:latest ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
 
       # Étape 4 : Pousser l'image Docker vers Docker Hub
