@@ -10,8 +10,6 @@ ENV	JMETER_BIN	$JMETER_HOME/bin
 ENV PATH $PATH:$JMETER_BIN
 
 # Définir le répertoire de travail par défaut
-COPY entrypoint.sh /
-
 WORKDIR	$JMETER_HOME
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["jmeter"]
