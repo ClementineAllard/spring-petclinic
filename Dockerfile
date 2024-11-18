@@ -5,11 +5,11 @@ FROM openjdk:8-jre-slim
 ENV JMETER_VERSION 5.6.3
 
 # Définir le dossier d'installation de JMeter
-ENV JMETER_HOME C:\Program Files\apache-jmeter-${JMETER_VERSION}
+ENV JMETER_HOME C:/Program Files/apache-jmeter-${JMETER_VERSION}
 ENV	JMETER_BIN	$JMETER_HOME/bin
 ENV PATH $PATH:$JMETER_BIN
 
 # Définir le répertoire de travail par défaut
 WORKDIR	$JMETER_HOME
 
-ENTRYPOINT ["jmeter"]
+CMD ["jmeter", "-h"]
