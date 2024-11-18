@@ -22,8 +22,8 @@ jobs:
       - name: Prepare 📦
         id: prep
         run: |
-          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/medhead-api-jmeter
-          VERSION=latest
+          DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/medhead-api
+          VERSION=jmeter
           TAGS="${DOCKER_IMAGE}:${VERSION}"
           echo ::set-output name=image::${DOCKER_IMAGE}
           echo ::set-output name=version::${VERSION}
