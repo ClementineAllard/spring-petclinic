@@ -26,12 +26,11 @@ jobs:
 
       # Étape 3 : Construire l'image Docker
       - name: Build Docker image
-        run: |
-          docker build -t  ${{ secrets.DOCKER_USERNAME }}/jmeter:${{ github.sha }} .
-          docker tag  ${{ secrets.DOCKER_USERNAME }}/jmeter:${{ github.sha }}  ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
+        run: docker tag  ${{ secrets.DOCKER_USERNAME }}/jmeter:${{ github.sha }}  ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
 
       # Étape 4 : Pousser l'image Docker vers Docker Hub
       - name: Push Docker image
-        run: |
-          docker push  ${{ secrets.DOCKER_USERNAME }}/jmeter:${{ github.sha }}
-          docker push  ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
+        run: docker push  ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
+
+      - name: Pull Docker image
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/jmeter:latest
