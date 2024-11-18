@@ -1,40 +1,46 @@
-# inspired by https://github.com/hauptmedia/docker-jmeter  and
-# https://github.com/hhcordero/docker-jmeter-server/blob/master/Dockerfile
-FROM alpine:3.12
-
-
-ARG JMETER_VERSION="5.5"
+# Step 1
+FROM ubuntu:18.04
+LABEL VENDOR=Praveen \
+PRODUCT=Praveen-Jha \
+Version=1.0.1
+MAINTAINER Praveen Jha <praveenkrjha93@gmail.com>
+# Step 2
+ARG JMETER_VERSION="5.3"
+ARG CMDRUNNER_JAR_VERSION="2.2.1"
+ARG JMETER_PLUGINS_MANAGER_VERSION="1.6"
 ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
-ENV JMETER_CUSTOM_PLUGINS_FOLDER /plugins
-ENV	JMETER_BIN	${JMETER_HOME}/bin
-ENV	JMETER_DOWNLOAD_URL  https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
-
-# Install extra packages
-# Set TimeZone, See: https://github.com/gliderlabs/docker-alpine/issues/136#issuecomment-612751142
-ARG TZ="Europe/Amsterdam"
-ENV TZ ${TZ}
-RUN    apk update \
-	&& apk upgrade \
-	&& apk add ca-certificates \
-	&& update-ca-certificates \
-	&& apk add --update openjdk8-jre tzdata curl unzip bash \
-	&& apk add --no-cache nss \
-	&& rm -rf /var/cache/apk/* \
-	&& mkdir -p /tmp/dependencies  \
-	&& curl -L --silent ${JMETER_DOWNLOAD_URL} >  /tmp/dependencies/apache-jmeter-${JMETER_VERSION}.tgz  \
-	&& mkdir -p /opt  \
-	&& tar -xzf /tmp/dependencies/apache-jmeter-${JMETER_VERSION}.tgz -C /opt  \
-	&& rm -rf /tmp/dependencies
-
-# TODO: plugins (later)
-# && unzip -oq "/tmp/dependencies/JMeterPlugins-*.zip" -d $JMETER_HOME
-
-# Set global PATH such that "jmeter" command is found
-ENV PATH $PATH:$JMETER_BIN
-
-# Entrypoint has same signature as "jmeter" command
-COPY entrypoint.sh /
-
-WORKDIR	${JMETER_HOME}
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENV JMETER_LIB_FOLDER ${JMETER_HOME}/lib/
+ENV JMETER_PLUGINS_FOLDER ${JMETER_LIB_FOLDER}ext/
+# Step 3:
+WORKDIR ${JMETER_HOME}
+RUN  apt-get -y update \
+&& apt-get install -y wget gnupg curl
+# Step 4:
+# Download Apache JMeter
+RUN wget http://apache.stu.edu.tw//jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
+RUN tar -xzf apache-jmeter-${JMETER_VERSION}.tgz
+RUN mv apache-jmeter-${JMETER_VERSION}/* /opt/apache-jmeter-${JMETER_VERSION}
+RUN rm -r /opt/apache-jmeter-${JMETER_VERSION}/apache-jmeter-${JMETER_VERSION}
+# Step 5:
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+&& apt-get update \
+&& apt-get install -y --no-install-recommends \
+git \
+openjdk-8-jre-headless
+# Step 6:
+# Download Command Runner and move it to lib folder
+WORKDIR ${JMETER_LIB_FOLDER}
+RUN wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/${CMDRUNNER_JAR_VERSION}/cmdrunner-${CMDRUNNER_JAR_VERSION}.jar
+# Step 7:
+# Download JMeter Plugins manager and move it to lib/ext folder
+WORKDIR ${JMETER_PLUGINS_FOLDER}
+RUN wget https://repo1.maven.org/maven2/kg/apc/jmeter-plugins-manager/${JMETER_PLUGINS_MANAGER_VERSION}/jmeter-plugins-manager-${JMETER_PLUGINS_MANAGER_VERSION}.jar
+# Step 8:
+WORKDIR ${JMETER_LIB_FOLDER}
+RUN java  -jar cmdrunner-2.2.1.jar --tool org.jmeterplugins.repository.PluginManagerCMD install-all-except jpgc-hadoop,jpgc-oauth,ulp-jmeter-autocorrelator-plugin,ulp-jmeter-videostreaming-plugin,ulp-jmeter-gwt-plugin,tilln-iso8583
+# Step 9:
+WORKDIR ${JMETER_HOME}
+# Step 10:
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+RUN update-ca-certificates
